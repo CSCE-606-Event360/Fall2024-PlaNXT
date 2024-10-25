@@ -44861,7 +44861,9 @@ Item.prototype.hideError = function() {
 }
 
 Item.prototype.objectHalfSize = function() {	
+	console.log("77777777777777777777");
 	console.log(this);	
+	console.log("77777777777777777777");
     var objectBox = new THREE.Box3();
     objectBox.setFromObject( this );
     return objectBox.max.clone().sub( objectBox.min ).divideScalar( 2 );
@@ -46138,6 +46140,7 @@ var Model = function(textureDir) {
 
   this.newRoom = function(floorplan, items) {
     this.scene.clearItems();
+	console.log("88888888888888888")
 	console.log(items);
     this.floorplan.loadFloorplan(floorplan);
     utils.forEach(items, function(item) {
@@ -46147,7 +46150,7 @@ var Model = function(textureDir) {
         itemName: item.item_name,
         resizable: item.resizable,
         itemType: item.item_type,
-        modelUrl: item.model_url
+        modelUrl: item.model_url,
       }
       var scale = {
         x: item.scale_x,
@@ -46404,10 +46407,29 @@ var Scene = function(model, textureDir) {
     if (!dontRemove) {
       utils.removeValue(items, item);
     }
+
+	console.log(item);
+
+
+	fetch(`/items/${item.metadata.id}`, {
+		method: 'DELETE',
+		headers: {
+		  "Content-Type": "application/json",
+		  "X-CSRF-Token": document.querySelector("[name='csrf-token']").content
+		}
+	  })
+	  .then(data => {
+		console.log(item.metadata.id);
+		console.log('Item deleted successfully:', data);
+	  })
+	  .catch((error) => {
+		console.error('Error deleting item:', error);
+	  });
   }
 
   this.addItem = function(itemType, fileName, metadata, position, rotation, scale, fixed) {
     itemType = itemType || 1;
+	console.log("ffffffffffffffffffffffffff")
 	console.log(fileName);
 	console.log(metadata);
 
@@ -46423,9 +46445,97 @@ var Scene = function(model, textureDir) {
       items.push(item);
       scope.add(item);
       item.initObject();
+	  console.log("inittttttttttttttt");
 	  console.log(item);
 	  scope.itemLoadedCallbacks.fire(item);
+
     }
+
+    scope.itemLoadingCallbacks.fire();
+    loader.load(
+      fileName,
+      loaderCallback,
+      textureDir
+    );
+  }
+
+  this.addItemClicked = function(itemType, fileName, metadata, position, rotation, scale, fixed) {
+    itemType = itemType || 1;
+	console.log("ffffffffffffffffffffffffff")
+	console.log(fileName);
+	console.log(metadata);
+
+    var loaderCallback = function(geometry, materials) {
+      var item = new item_types[itemType](
+        model,
+        metadata, geometry,
+        new THREE.MeshFaceMaterial(materials),
+        position, rotation, scale
+      );
+
+      item.fixed = fixed || false;
+      items.push(item);
+      scope.add(item);
+      item.initObject();
+	  console.log("inittttttttttttttt");
+	  console.log(item);
+	  scope.itemLoadedCallbacks.fire(item);
+
+    
+
+	var xpos = item.position.x;
+      var ypos = item.position.y;
+      var zpos = item.position.z;
+
+      var box = new THREE.Box3().setFromObject(item);
+      var width = box.max.x - box.min.x;
+      var height = box.max.y - box.min.y;
+      var depth = box.max.z - box.min.z;
+      var rotationY = item.rotation.y;
+      var rotationAngle = rotationY * (180 / Math.PI);
+      var itemData = {
+        name: item.metadata.itemName,
+        model: item.metadata.modelUrl,
+        width: width,
+        length: height,
+        depth: depth,
+        rotation: rotationAngle,
+        description: '',
+		xpos: xpos/31.4,
+        ypos: 0,
+        zpos: zpos/31.4,
+        step_id: 1 ,
+        setup_start_time: new Date('2024-10-17 21:54'.replace(' ', 'T')),
+        setup_end_time: new Date('2024-10-17 22:54'.replace(' ', 'T')),
+        breakdown_start_time: new Date('2024-10-17 21:54'.replace(' ', 'T')),
+        breakdown_end_time: new Date('2024-10-17 22:54'.replace(' ', 'T')),
+    };
+
+    console.log("66666666666666666666666666666666");
+    console.log(itemData);
+    console.log("66666666666666666666666666666666");
+
+	fetch(`/items`, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": document.querySelector("[name='csrf-token']").content
+      },
+      body: JSON.stringify(itemData)
+    }).then(response => {
+		if (!response.ok) {
+		  throw new Error('Network response was not ok');
+		}
+		return response.json();  // Parse the JSON response to get the item data
+	  })
+	  .then(data => {
+		console.log("Item added successfully with ID:", data.id);
+		item.metadata.id = data.id;
+	  })
+    .catch((error) => {
+      console.error('Error updating item:', error);
+    });
+	}
 
     scope.itemLoadingCallbacks.fire();
     loader.load(

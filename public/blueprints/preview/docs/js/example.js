@@ -93,6 +93,7 @@ var ContextMenu = function(room3d) {
 
   function init() {
     $("#context-menu-delete").click(function(event) {
+      console.log("remove here", this);
         selectedItem.remove();
     });
 
@@ -117,6 +118,7 @@ var ContextMenu = function(room3d) {
 
   function itemSelected(item) {
     selectedItem = item;
+    console.log("itemmmmmmmmmmmmmmmmmmmmmmmmmmm");
     console.log(item);
 
     $("#context-menu-name").text(item.metadata.itemName);
@@ -323,20 +325,34 @@ var SideMenu = function(room3d, floorplanControls, modalEffects) {
 
   };
 
+  
   // TODO: this doesn't really belong here
+
+
   function initItems() {
     $("#add-items").find(".add-item").mousedown(function(e) {
+      console.log("heyyyy im here");
       var modelUrl = $(this).attr("model-url");
+      console.log("heyyyy im here1");
       var itemType = parseInt($(this).attr("model-type"));
+      var itemId = parseInt($(this).attr("item-id"));
+      console.log("heyyyy im here2", itemId);
+      var itemName = $(this).attr("model-name");
+      console.log("heyyyy im here3");
       var metadata = {
-        itemName: $(this).attr("model-name"),
+        itemName: itemName,
         resizable: true,
         modelUrl: modelUrl,
-        itemType: itemType
+        itemType: itemType,
+        id: 0,
       }
-      room3d.model.scene.addItem(itemType, modelUrl, metadata);
-      setCurrentState(scope.states.DEFAULT);
+      console.log("heyyyy im here4");
+     console.log("hiiiii");
+    room3d.model.scene.addItemClicked(itemType, modelUrl, metadata);  
+    setCurrentState(scope.states.DEFAULT);
+
     });
+
   }
 
   init();

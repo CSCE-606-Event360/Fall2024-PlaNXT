@@ -6,16 +6,16 @@
         "y": 0
       },
       "a8b17dd7-026c-de11-3077-01a169d1b795": {
-        "x": 15700.0,
+        "x": 3862.2,
         "y": 0
       },
       "8039b51e-5a0b-8843-3129-32e647a42002": {
         "x": 0,
-        "y": 15700.0
+        "y": 3862.2
       },
       "8a66d562-2eb4-2147-763c-7962e4208a0a": {
-        "x": 15700.0,
-        "y": 15700.0
+        "x": 3862.2,
+        "y": 3862.2
       }
     },
     "walls": [
@@ -86,17 +86,60 @@
   },
   "items": [
     {
-      "item_name": "Camera",
+      "item_name": "Red Chair",
       "item_type": null,
-      "model_url": "models/js/camera.js",
-      "xpos": 7588.607475951485,
+      "model_url": "models/js/chair_red.js",
+      "xpos": 595.1561689042679,
       "ypos": 0,
-      "zpos": 9405.26360309494,
+      "zpos": 756.0201927137695,
       "rotation": 0,
       "scale_x": 1,
       "scale_y": 1,
       "scale_z": 1,
-      "fixed": false
+      "fixed": false,
+      "item_id": "1"
+    },
+    {
+      "item_name": "Chair",
+      "item_type": null,
+      "model_url": "models/js/chair.js",
+      "xpos": 1750.7230793190047,
+      "ypos": 0,
+      "zpos": 2260.1030756729406,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "item_id": "2"
+    },
+    {
+      "item_name": "Red Chair",
+      "item_type": null,
+      "model_url": "models/js/chair_red.js",
+      "xpos": 604.7918231342555,
+      "ypos": 0,
+      "zpos": 2440.545638112506,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "item_id": "3"
+    },
+    {
+      "item_name": "Red Chair",
+      "item_type": null,
+      "model_url": "models/js/chair_red.js",
+      "xpos": 2593.7981269589477,
+      "ypos": 0,
+      "zpos": 605.0713302813556,
+      "rotation": 0,
+      "scale_x": 1,
+      "scale_y": 1,
+      "scale_z": 1,
+      "fixed": false,
+      "item_id": "4"
     }
   ]
 }

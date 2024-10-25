@@ -148,7 +148,8 @@ class PlansController < ApplicationController
                                      'scale_x' => 1,
                                      'scale_y' => 1,
                                      'scale_z' => 1,
-                                     'fixed' => false
+                                     'fixed' => false,
+                                     'item_id' => values['item_id']
                                    })
     end
 

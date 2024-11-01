@@ -44088,6 +44088,7 @@ var Floorplanner = function(canvas, floorplan) {
 
   function mousemove(event) {
     mouseMoved = true;
+	console.log("moving object");
 
     // update mouse
     rawMouseX = event.clientX;
@@ -44135,6 +44136,7 @@ var Floorplanner = function(canvas, floorplan) {
 
     // dragging
     if (scope.mode == scope.modes.MOVE && mouseDown) {
+		console.log("dragging item");
       if (scope.activeCorner) {
         scope.activeCorner.move(mouseX, mouseY);
         scope.activeCorner.snapToAxis(snapTolerance);
@@ -44154,6 +44156,7 @@ var Floorplanner = function(canvas, floorplan) {
 
   function mouseup() {
     mouseDown = false;
+	console.log("moving objectttt");
 
     // drawing
     if (scope.mode == scope.modes.DRAW && !mouseMoved) {
@@ -44170,6 +44173,7 @@ var Floorplanner = function(canvas, floorplan) {
 
   function mouseleave() {
     mouseDown = false;
+	console.log("moving objectssss");
     //scope.setMode(scope.modes.MOVE);
   }
 
@@ -44784,10 +44788,31 @@ Item.prototype.moveToPosition = function(vec3, intersection) {
     this.position.copy(vec3);
 }
 
-Item.prototype.clickReleased = function() {
+Item.prototype.clickReleased = function(intersection) {
+	console.log("done released", intersection);
+
+
     if (this.error) {
         this.hideError();
     }
+	fetch(`/items/${this.metadata.itemId}`, {
+		method: 'PUT',
+		headers: {
+		  "Content-Type": "application/json",
+		  "X-CSRF-Token": document.querySelector("[name='csrf-token']").content
+		},
+		body: JSON.stringify({ item: {
+			xpos: (intersection.point.x)/31.4,
+			zpos: (intersection.point.z)/31.4,
+		  } 
+		})
+	  })
+	  .then(data => {
+		console.log('Item updated successfully:', data);
+	  })
+	  .catch((error) => {
+		console.error('Error updating item:', error);
+	  });
 };
 
 // Returns an array of planes to use other than the ground plane
@@ -46162,6 +46187,12 @@ var Model = function(textureDir) {
         resizable: item.resizable,
         itemType: item.item_type,
         modelUrl: item.model_url,
+		itemId: item.item_id,
+		setup_start: item.setup_start,
+        setup_end: item.setup_end,
+        breakdown_start: item.breakdown_start,
+        breakdown_end: item.breakdown_end,
+		
       }
       var scale = {
         x: item.scale_x,
@@ -46418,11 +46449,11 @@ var Scene = function(model, textureDir) {
     if (!dontRemove) {
       utils.removeValue(items, item);
     }
-
+	console.log("removing item");
 	console.log(item);
 
 
-	fetch(`/items/${item.metadata.id}`, {
+	fetch(`/items/${item.metadata.itemId}`, {
 		method: 'DELETE',
 		headers: {
 		  "Content-Type": "application/json",
@@ -46430,7 +46461,7 @@ var Scene = function(model, textureDir) {
 		}
 	  })
 	  .then(data => {
-		console.log(item.metadata.id);
+		console.log(item.metadata.itemId);
 		console.log('Item deleted successfully:', data);
 	  })
 	  .catch((error) => {
@@ -46470,82 +46501,191 @@ var Scene = function(model, textureDir) {
     );
   }
 
-  this.addItemClicked = function(itemType, fileName, metadata, position, rotation, scale, fixed) {
-    itemType = itemType || 1;
-	console.log("ffffffffffffffffffffffffff")
-	console.log(fileName);
-	console.log(metadata);
+this.openCreateModal = function(metadata) {
 
-    var loaderCallback = function(geometry, materials) {
-      var item = new item_types[itemType](
-        model,
-        metadata, geometry,
-        new THREE.MeshFaceMaterial(materials),
-        position, rotation, scale
-      );
+        // Show the delete confirmation modal
+        const createModal = new bootstrap.Modal(document.getElementById('createModal'));
+        createModal.show();
 
-      item.fixed = fixed || false;
-      items.push(item);
-      scope.add(item);
-      item.initObject();
-	  console.log("inittttttttttttttt");
-	  console.log(item);
-	  scope.itemLoadedCallbacks.fire(item);
+        document.getElementById('createModalLabel').innerText = `Details: ${metadata.displayName}`;
+        document.getElementById('createItemWidth').value = item.width;
+        document.getElementById('createItemDepth').value = item.depth;
+        document.getElementById('createItemRotation').value = 0;
+        document.getElementById('createItemSetupStartTime').value = parseDateTime(setupStartTime);
+        document.getElementById('createItemSetupEndTime').value = parseDateTime(setupEndTime);
+        document.getElementById('createItemBreakdownStartTime').value = parseDateTime(setupStartTime);
+        document.getElementById('createItemBreakdownEndTime').value = parseDateTime(setupEndTime);
 
-    
+        // Set the onclick function for the confirm button
+        document.getElementById('confirmCreateBtn').onclick = function() {
+            // Get the values from the modal
+            var width = document.getElementById('createItemWidth').value;
+            var depth = document.getElementById('createItemDepth').value;
+            var rotation = document.getElementById('createItemRotation').value;
+            var description = document.getElementById('createItemDescription').value;
+            var setupStartTime = document.getElementById('createItemSetupStartTime').value + ":00";
+            var setupEndTime = document.getElementById('createItemSetupEndTime').value + ":00";
+            var breakdownStartTime = document.getElementById('createItemBreakdownStartTime').value + ":00";
+            var breakdownEndTime = document.getElementById('createItemBreakdownEndTime').value + ":00";
+            var inch2feet = 1/12;
 
-	var xpos = item.position.x;
-      var ypos = item.position.y;
-      var zpos = item.position.z;
+            console.log(setupStartTime);
 
-      var box = new THREE.Box3().setFromObject(item);
-      var width = box.max.x - box.min.x;
-      var height = box.max.y - box.min.y;
-      var depth = box.max.z - box.min.z;
-      var rotationY = item.rotation.y;
-      var rotationAngle = rotationY * (180 / Math.PI);
-      var itemData = {
-        name: item.metadata.itemName,
-        model: item.metadata.modelUrl,
-        width: width,
-        length: height,
-        depth: depth,
-        rotation: rotationAngle,
-        description: '',
-		xpos: xpos/31.4,
-        ypos: 0,
-        zpos: zpos/31.4,
-        step_id: 1 ,
-        setup_start_time: new Date('2024-10-17 21:54'.replace(' ', 'T')),
-        setup_end_time: new Date('2024-10-17 22:54'.replace(' ', 'T')),
-        breakdown_start_time: new Date('2024-10-17 21:54'.replace(' ', 'T')),
-        breakdown_end_time: new Date('2024-10-17 22:54'.replace(' ', 'T')),
+            // Create the item
+            createItem({
+                type: item_type,
+                real_type: item.real_type,
+                name: item.displayName,
+                model: item.model,
+                
+                width: width,
+                length: item.length,
+                depth: depth,
+                rotation: rotation,
+                description: description,
+                setupStartTime: setupStartTime,
+                setupEndTime: setupEndTime,
+                breakdownStartTime: breakdownStartTime,
+                breakdownEndTime: breakdownEndTime,
+
+                xpos: x/(ratio)+inch2feet*width/2,
+                ypos: 0,
+                zpos: y/(ratio)+inch2feet*depth/2,
+            }, selectedStepId, loadItems);
+        };
     };
 
-    console.log("66666666666666666666666666666666");
-    console.log(itemData);
-    console.log("66666666666666666666666666666666");
+  this.addItemClicked = function(itemType, fileName, metadata, venue_start, venue_end, position, scale, rotation, fixed) {
 
-	fetch(`/items`, {
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRF-Token": document.querySelector("[name='csrf-token']").content
-      },
-      body: JSON.stringify(itemData)
-    }).then(response => {
-		if (!response.ok) {
-		  throw new Error('Network response was not ok');
-		}
-		return response.json();  // Parse the JSON response to get the item data
-	  })
-	  .then(data => {
-		console.log("Item added successfully with ID:", data.id);
-		item.metadata.id = data.id;
-	  })
-    .catch((error) => {
-      console.error('Error updating item:', error);
-    });
+	console.log(itemType, fileName, metadata, venue_start, venue_end, position, scale, fixed)
+	//--------------------------------------------------------------------
+	// const createModal = new bootstrap.Modal(document.getElementById('createModal'));
+	const createModal = document.getElementById("createModal");
+    // createModal.show();
+	function parseDateTime(isoDatetime, noSeconds=false){
+    if(isoDatetime == null){
+        return null;
+    }
+    let date = new Date(isoDatetime);
+
+    let dateTimeStr = date.toISOString().replace('T', ' ').slice(0, 19);
+
+    if(noSeconds){
+        dateTimeStr = dateTimeStr.slice(0, 16);
+    }
+    return dateTimeStr;
+  }
+
+
+
+   
+
+		itemType = itemType || 1;
+		console.log("ffffffffffffffffffffffffff")
+		console.log(fileName);
+		console.log(metadata);
+
+		var loaderCallback = function(geometry, materials) {
+
+			var item = new item_types[itemType](
+				model,
+				metadata, geometry,
+				new THREE.MeshFaceMaterial(materials),
+				position, rotation, scale
+			);
+
+			item.fixed = fixed || false;
+			items.push(item);
+			scope.add(item);
+			item.initObject();
+			console.log("inittttttttttttttt");
+			console.log(item);
+			scope.itemLoadedCallbacks.fire(item);
+
+			document.getElementById('createModalLabel').innerText = `Details: ${metadata.itemName}`;
+			document.getElementById('createItemWidth').value = item.getWidth();
+        document.getElementById('createItemDepth').value = item.getDepth();
+			document.getElementById('createItemRotation').value = 0;
+			document.getElementById('createItemSetupStartTime').value = parseDateTime(venue_start);
+			document.getElementById('createItemSetupEndTime').value = parseDateTime(venue_end);
+			document.getElementById('createItemBreakdownStartTime').value = parseDateTime(venue_start);
+			document.getElementById('createItemBreakdownEndTime').value = parseDateTime(venue_end);
+			createModal.style.display = 'block';
+		
+			document.getElementById('confirmCreateBtn').onclick = function() {
+				// Get the values from the modal
+				var width = document.getElementById('createItemWidth').value;
+				var depth = document.getElementById('createItemDepth').value;
+				var rotation = document.getElementById('createItemRotation').value;
+				var description = document.getElementById('createItemDescription').value;
+				var setupStartTime = document.getElementById('createItemSetupStartTime').value + ":00";
+				var setupEndTime = document.getElementById('createItemSetupEndTime').value + ":00";
+				var breakdownStartTime = document.getElementById('createItemBreakdownStartTime').value + ":00";
+				var breakdownEndTime = document.getElementById('createItemBreakdownEndTime').value + ":00";
+				var inch2feet = 1/12;
+		
+				console.log(setupStartTime);
+
+			var xpos = item.position.x;
+			var ypos = item.position.y;
+			var zpos = item.position.z;
+
+			var box = new THREE.Box3().setFromObject(item);
+			// var width = box.max.x - box.min.x;
+			var height = box.max.y - box.min.y;
+			// var depth = box.max.z - box.min.z;
+
+			var itemData = {
+				name: item.metadata.itemName,
+				model: item.metadata.modelUrl,
+				width: width,
+				length: height,
+				depth: depth,
+				rotation: rotation,
+				description: '',
+				xpos: xpos/31.4,
+				ypos: 0,
+				zpos: zpos/31.4,
+				step_id: 1 ,
+				setup_start_time: setupStartTime,
+				setup_end_time: setupEndTime,
+				breakdown_start_time: breakdownStartTime,
+				breakdown_end_time: breakdownEndTime,
+			};
+
+			console.log("66666666666666666666666666666666");
+			console.log(itemData);
+			console.log("66666666666666666666666666666666");
+
+			fetch(`/items`, {
+			method: 'POST',
+			headers: {
+				"Content-Type": "application/json",
+				"X-CSRF-Token": document.querySelector("[name='csrf-token']").content
+			},
+			body: JSON.stringify(itemData)
+			}).then(response => {
+				if (!response.ok) {
+				throw new Error('Network response was not ok');
+				}
+				return response.json();  // Parse the JSON response to get the item data
+			})
+			.then(data => {
+				console.log("Item added successfully with ID:", data.id);
+				item.metadata.itemId = data.id;
+				console.log("new item data");
+				console.log(item);
+			})
+			.catch((error) => {
+			console.error('Error updating item:', error);
+			});
+			createModal.style.display = 'none';
+		};
+		document.getElementById('cancelCreateBtn').onclick = function() {
+			document.getElementById('createModal').style.display = 'none';
+		};
+	//-------------------------------------------------------------------
+
 	}
 
     scope.itemLoadingCallbacks.fire();
@@ -46797,6 +46937,7 @@ var ThreeController = function(three, model, camera, element, controls, hud) {
   }
 
   function clickDragged(vec2) {
+	console.log("new dragg");
     vec2 = vec2 || mouse;
     var intersection = scope.itemIntersection(mouse, selectedObject);
     if (intersection) {
@@ -46934,7 +47075,8 @@ var ThreeController = function(three, model, camera, element, controls, hud) {
 
       switch(state) {
         case states.DRAGGING:
-          selectedObject.clickReleased();
+		var intersection = scope.itemIntersection(mouse, selectedObject);
+          selectedObject.clickReleased(intersection);
           switchState(states.SELECTED);
           break;
         case states.ROTATING:

@@ -47,7 +47,12 @@ var Model = function(textureDir) {
         scale_x: object.scale.x,
         scale_y: object.scale.y,
         scale_z: object.scale.z,
-        fixed: object.fixed
+        fixed: object.fixed,
+        id: object.metadata.itemId,
+        setup_start: object.metadata.setup_start,
+        setup_end: object.metadata.setup_end,
+        breakdown_start: object.metadata.breakdown_start,
+        breakdown_end: object.metadata.breakdown_end
       };
     }
 
@@ -69,7 +74,12 @@ var Model = function(textureDir) {
         itemName: item.item_name,
         resizable: item.resizable,
         itemType: item.item_type,
-        modelUrl: item.model_url
+        modelUrl: item.model_url,
+        itemId: item.item_id,
+        setup_start: item.setup_start,
+        setup_end: item.setup_end,
+        breakdown_start: item.breakdown_start,
+        breakdown_end: item.breakdown_end
       }
       var scale = {
         x: item.scale_x,

@@ -328,9 +328,9 @@ var SideMenu = function(room3d, floorplanControls, modalEffects) {
   
   // TODO: this doesn't really belong here
 
-
   function initItems() {
     $("#add-items").find(".add-item").mousedown(function(e) {
+
       console.log("heyyyy im here");
       var modelUrl = $(this).attr("model-url");
       console.log("heyyyy im here1");
@@ -344,17 +344,23 @@ var SideMenu = function(room3d, floorplanControls, modalEffects) {
         resizable: true,
         modelUrl: modelUrl,
         itemType: itemType,
-        id: 0,
+        itemId: 0,
       }
-      console.log("heyyyy im here4");
-     console.log("hiiiii");
-    room3d.model.scene.addItemClicked(itemType, modelUrl, metadata);  
-    setCurrentState(scope.states.DEFAULT);
-
+      let fullFloorplanObj = null;
+      fetch("../../../floorplan.json")
+        .then(response => response.json())
+        .then(json => {
+          console.log(json)
+          fullFloorplanObj = json;
+          console.log("heyyyy im here4", fullFloorplanObj);
+          console.log(fullFloorplanObj.timeline);
+          venue_start = fullFloorplanObj.timeline.start_time;
+          venue_end = fullFloorplanObj.timeline.end_time;
+          room3d.model.scene.addItemClicked(itemType, modelUrl, metadata, venue_start, venue_end);  
+          setCurrentState(scope.states.DEFAULT);
+        });
     });
-
   }
-
   init();
 
 }

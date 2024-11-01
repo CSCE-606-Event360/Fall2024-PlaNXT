@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Class
 class Step < ActiveRecord::Base
   belongs_to :plan
   has_many :items, dependent: :destroy

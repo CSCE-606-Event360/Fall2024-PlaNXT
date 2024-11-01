@@ -4,6 +4,7 @@ require 'omniauth-oauth2'
 
 module OmniAuth
   module Strategies
+    # Class
     class Events360 < OmniAuth::Strategies::OAuth2
       option :name, :events360
 

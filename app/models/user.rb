@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Class
 class User < ApplicationRecord
   # adds virtual attributes for authentication
   has_secure_password

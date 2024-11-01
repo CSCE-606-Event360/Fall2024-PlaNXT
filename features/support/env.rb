@@ -40,7 +40,7 @@ ActionController::Base.allow_rescue = false
 # Capybara.default_driver = :selenium
 
 require 'selenium-webdriver'
-require 'webdrivers' 
+require 'webdrivers'
 
 Capybara.register_driver :selenium do |app|
   options = Selenium::WebDriver::Chrome::Options.new
@@ -50,8 +50,8 @@ Capybara.register_driver :selenium do |app|
   options.add_argument('--enable-logging')
   options.add_argument('--v=1')
   options.add_argument('--disable-dev-shm-usage')
- 
-  Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
+
+  Capybara::Selenium::Driver.new(app, browser: :chrome, options:)
 end
 
 Capybara.default_driver = :selenium

@@ -70,8 +70,8 @@ Then('I should see the item {string} appear on the canvas at x={int}, y={int}') 
 end
 
 Then('I should see the item {string} appear in the table') do |string|
-  itemsTable = find('#itemsTable')
-  expect(itemsTable).to have_content(string)
+  items_table = find('#itemsTable')
+  expect(items_table).to have_content(string)
 end
 
 Given('I am on the Floor Plan 2D page') do

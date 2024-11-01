@@ -16,7 +16,8 @@ RSpec.describe PlansController, type: :controller do
       get :download_all_data
 
       expect(response.content_type).to eq('text/csv')
-      expect(response.headers['Content-Disposition']).to include("attachment; filename=\"plans_and_items_#{Date.today}.csv\"")
+      expect(response.headers['Content-Disposition']).to
+      include("attachment; filename=\"plans_and_items_#{Date.today}.csv\"")
 
       CSV.parse(response.body)
       # Basic checks for CSV content
@@ -28,7 +29,8 @@ RSpec.describe PlansController, type: :controller do
       get :download_all_data
 
       expect(response.content_type).to eq('text/csv')
-      expect(response.headers['Content-Disposition']).to include("attachment; filename=\"plans_and_items_#{Date.today}.csv\"")
+      expect(response.headers['Content-Disposition']).to
+      include("attachment; filename=\"plans_and_items_#{Date.today}.csv\"")
 
       CSV.parse(response.body)
       # Check for header only in CSV

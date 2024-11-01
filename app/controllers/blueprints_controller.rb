@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Class
 class BlueprintsController < ApplicationController
   layout 'layouts/blueprints'
 

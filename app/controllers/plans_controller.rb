@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Class
 class PlansController < ApplicationController
   require 'csv'
 
@@ -161,7 +162,7 @@ class PlansController < ApplicationController
                                      'setup_start' => values['item_setup_start'],
                                      'setup_end' => values['item_setup_end'],
                                      'breakdown_start' => values['item_breakdown_start'],
-                                     'breakdown_end' => values['item_breakdown_end'],
+                                     'breakdown_end' => values['item_breakdown_end']
                                    })
     end
 

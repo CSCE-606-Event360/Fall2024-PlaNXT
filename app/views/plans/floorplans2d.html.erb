@@ -108,29 +108,32 @@
   </div>
 
   <div class="container">
-    <div> 
-      <table class="table" id="itemsTable" style="margin-top: 3em">   
-        <thead class="thead-light">
+    <div class="button-container d-flex" style="margin-top: 3em;margin-bottom: 3em">
+      <%= link_to "Back", plans_path, class: "btn btn-secondary" %>
+      <%= link_to "Save", download_all_data_path, method: :post, class: "btn btn-primary me-auto", style:"background-color:#478ac9; margin-left: 1em;" %>
+      <!--Preview in 3D button that links to Preview in 3D page-->
+      <button type="button" class="btn btn-primary" id="preview3dLink">Preview in 3D</button>
+    </div>
+    <div style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd;">
+    <table class="table" id="itemsTable" style="border-collapse: separate; width: 100%;">
+      <thead class="thead-light" style="position: sticky; top: 0; background-color: #fff; z-index: 1;">
+        <tr>
           <th style="vertical-align: middle;">Name</th>
           <th style="vertical-align: middle;">Item Type</th>
           <th style="vertical-align: middle;">Setup Start</th>
           <th style="vertical-align: middle;">Setup End</th>
           <th style="vertical-align: middle;">Breakdown Start</th>
           <th style="vertical-align: middle;">Breakdown End</th>
-        </thead>
-        <tbody id="items-table-body">
-          <!-- Table rows will be added dynamically -->
+        </tr>
+      </thead>
+      <tbody id="items-table-body">
+        <!-- Table rows will be added dynamically -->
+      </tbody>
+    </table>
+  </div>
+</div>
 
-        </tbody>
-      </table>
-    <div>
 
-    <div class="button-container d-flex" style="margin-top: 3em">
-      <%= link_to "Back", plans_path, class: "btn btn-secondary" %>
-      <%= link_to "Save", download_all_data_path, method: :post, class: "btn btn-primary me-auto", style:"background-color:#478ac9; margin-left: 1em;" %>
-      <!--Preview in 3D button that links to Preview in 3D page-->
-      <button type="button" class="btn btn-primary" id="preview3dLink">Preview in 3D</button>
-    </div>
   </div>
 
   <%= render "plans/createItemModal" %>

@@ -285,9 +285,7 @@
 
       for( item of items){
         var droppedElementId = "item-"
-        console.log("mainnnnnnnnn", item)
         for(let itemType in itemTemplates){
-          console.log("itemmmmmmmmm", itemType)
           if (itemTemplates[itemType].displayName == item.name){
             droppedElementId += itemType;
             break;
@@ -525,12 +523,16 @@
         <td>${breakdownStartTime}</td>
         <td>${breakdownEndTime}</td>
         <td><button class="view-dependencies-btn" data-item-id="${item.id}">View Dependency</button></td>
-        <td><button class="edit-btn">Edit</button></td>
+        <td><button class="edit-item-btn" data-item-id="${item.id}">Edit</button></td>
         <td><button class="delete-btn">Delete</button></td>
       `;
 
       newRow.querySelector('.view-dependencies-btn').addEventListener('click', function() {
       showItemDependencies(item.id);
+      });
+
+      newRow.querySelector('.edit-item-btn').addEventListener('click', function() {
+        openUpdateModal(item, currentStep, loadItems);
       });
     }
     

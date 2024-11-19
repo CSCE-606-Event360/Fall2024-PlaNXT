@@ -166,7 +166,7 @@
         };
 
         document.getElementById('confirmDeleteBtn').onclick = function() {
-            deleteItem(item.id, selectedStepId, loadItems);
+            openDeleteConfirmationModal(item.id, item.name, selectedStepId, loadItems);
         };
     };
 

@@ -35,6 +35,7 @@ var ThreeMain = function(model, element, canvasElement, opts) {
   var domElement;
 
   var camera;
+  var orthoCam;
   var renderer;
   this.controls;
   var canvas;
@@ -68,7 +69,7 @@ var ThreeMain = function(model, element, canvasElement, opts) {
     THREE.ImageUtils.crossOrigin = "";
 
     domElement = scope.element.get(0) // Container
-    camera = new THREE.PerspectiveCamera(45, 1, 1, 10000);
+
     renderer = new THREE.WebGLRenderer({
       antialias: true,
       preserveDrawingBuffer: true // required to support .toDataURL()
@@ -80,7 +81,22 @@ var ThreeMain = function(model, element, canvasElement, opts) {
 
     var skybox = new ThreeSkybox(scene);
 
-    scope.controls = new ThreeControls(camera, domElement);
+    camera = new THREE.PerspectiveCamera(45, 1, 1, 10000);
+
+    console.log(renderer.domElement)
+    let width = renderer.domElement.width;
+    let height = renderer.domElement.height;
+    console.log("LISTEN TO ME", width, height)
+  	orthoCam = new THREE.OrthographicCamera( 
+      width / 2, 
+      width / -2, 
+      height, 
+      height / -2, 
+      1, 
+      1000 
+    );
+
+    scope.controls = new ThreeControls(camera, orthoCam, domElement);
 
     hud = new ThreeHUD(scope);
 
@@ -176,9 +192,9 @@ var ThreeMain = function(model, element, canvasElement, opts) {
     spin();
     if (shouldRender()) {
       renderer.clear();
-      renderer.render(scene.getScene(), camera);
+      renderer.render(scene.getScene(), scope.controls.getCurrentCamera());
       renderer.clearDepth();
-      renderer.render(hud.getScene(), camera); 
+      renderer.render(hud.getScene(), scope.controls.getCurrentCamera()); 
     }
     lastRender = Date.now();
   };

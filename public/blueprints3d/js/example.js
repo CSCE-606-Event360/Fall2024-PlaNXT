@@ -42,11 +42,24 @@ var CameraButtons = function(room3d) {
     $("#move-right").dblclick(preventDefault);
     $("#move-up").dblclick(preventDefault);
     $("#move-down").dblclick(preventDefault);
+
+    $("#2D").click(camera2D)
+    $("#3D").click(camera3D)
   }
 
   function preventDefault(e) {
     e.preventDefault();
     e.stopPropagation();
+  }
+
+  function camera2D() {
+    console.log("camera2d")
+    orbitControls.switchToOrthoCam()
+  }
+
+  function camera3D() {
+    console.log("camera3d")
+    orbitControls.switchToOrbitCam()
   }
 
   function pan(direction) {

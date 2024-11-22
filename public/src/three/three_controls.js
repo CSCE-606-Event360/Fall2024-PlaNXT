@@ -11,9 +11,17 @@ Contributors:
 var JQUERY = require('jquery');
 var THREE = require('three')
 
-var ThreeControls = function (object, domElement) {
+var ThreeControls = function (perspCam = null, orthoCam = null, domElement) {
 
-	this.object = object;
+
+	this.object = perspCam;
+	this.perspCam = perspCam
+	this.orthoCam = orthoCam;
+
+	this.getCurrentCamera = function() {
+		return this.object;
+	}
+
 	this.domElement = (domElement !== undefined) ? domElement : document;
 
 	// Set to false to disable this control
@@ -87,6 +95,21 @@ var ThreeControls = function (object, domElement) {
 
 	this.controlsActive = function() {
 		return (state === STATE.NONE);
+	}
+
+	this.switchToOrthoCam = function() {
+		this.object = this.orthoCam;
+		this.object.position.set(
+			this.target.x,
+			this.target.y + 400,
+			this.target.z
+		)
+		this.object.lookAt(this.target)
+		this.object.zoom(100)
+	}
+
+	this.switchToOrbitCam = function() {
+		this.object = this.perspCam
 	}
 
   this.setPan = function( vec3 ) {
@@ -220,7 +243,7 @@ var ThreeControls = function (object, domElement) {
 		var radius = offset.length() * scale;
 
 		// restrict radius to be between desired limits
-		radius = Math.max( this.minDistance, Math.min( this.maxDistance, radius ) );
+		// radius = Math.max( this.minDistance, Math.min( this.maxDistance, radius ) );
 		
 		// move target to panned location
 		this.target.add( pan );

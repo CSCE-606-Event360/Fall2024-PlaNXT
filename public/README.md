@@ -1,4 +1,4 @@
-Modified version of an older commit of furniship/blueprints3d library.
+Modified version of an older commit of furnishup/blueprints3d library.
 
 First run `npm i` in this dir.
 
